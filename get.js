@@ -13,7 +13,6 @@ const OUTPUT_DIR = path.join(__dirname, "categories");
 
 /**
  * Launch Puppeteer browser instance.
- * @returns {Promise<puppeteer.Browser>}
  */
 async function launchBrowser() {
   return await puppeteer.launch({ headless: "new" });
@@ -21,15 +20,12 @@ async function launchBrowser() {
 
 /**
  * Scrapes category and subcategory data from DealNews.
- * @param {puppeteer.Page} page Puppeteer Page instance
- * @returns {Promise<Object[]>} Array of categories and subcategories
  */
 async function scrapeCategories(page) {
   try {
     console.log("🌍 Navigating to", BASE_URL);
     await page.goto(BASE_URL, { waitUntil: "networkidle2", timeout: 60000 });
 
-    // Extract category and subcategory details
     return await page.evaluate(() => {
       const categories = [];
       document
@@ -45,7 +41,7 @@ async function scrapeCategories(page) {
           categoryDiv.querySelectorAll(".category a").forEach((sub) => {
             subcategories.push({
               name: sub.textContent.trim(),
-              link: new URL(sub.href, window.location.origin).href, // Convert to absolute URL
+              link: new URL(sub.href, window.location.origin).href,
             });
           });
 
@@ -65,49 +61,16 @@ async function scrapeCategories(page) {
 }
 
 /**
- * Sanitizes folder names to remove invalid characters.
- * @param {string} name Folder name
- * @returns {string} Sanitized folder name
+ * Sanitizes folder/file names.
  */
 function sanitizeFolderName(name) {
   return name.replace(/[<>:"/\\|?*]/g, "_");
 }
 
 /**
- * Creates category and subcategory folders.
- * @param {Object[]} categories Category data
+ * Visits subcategory pages and extracts product links.
  */
-async function createFolders(categories) {
-  try {
-    await fs.mkdir(OUTPUT_DIR, { recursive: true });
-
-    for (const category of categories) {
-      const categoryPath = path.join(
-        OUTPUT_DIR,
-        sanitizeFolderName(category.name)
-      );
-      await fs.mkdir(categoryPath, { recursive: true });
-
-      for (const sub of category.subcategories) {
-        const subcategoryPath = path.join(
-          categoryPath,
-          sanitizeFolderName(sub.name)
-        );
-        await fs.mkdir(subcategoryPath, { recursive: true });
-      }
-    }
-    console.log("✅ Folder structure created successfully.");
-  } catch (error) {
-    console.error("❌ Error creating folders:", error);
-  }
-}
-
-/**
- * Visits subcategory pages and loads all deals by clicking the "Get the next 20 Deals" button.
- * @param {puppeteer.Page} page Puppeteer Page instance
- * @param {Object[]} categories Category data
- */
-async function visitSubcategory(page, categories) {
+async function visitCategorySubcategory(page, categories) {
   for (const category of categories) {
     for (const sub of category.subcategories) {
       try {
@@ -117,25 +80,22 @@ async function visitSubcategory(page, categories) {
           timeout: 30000,
         });
 
-        // Keep clicking the "Get the next 20 Deals" button until it disappears
+        // Keep clicking the "Get the next 20 Deals" button
         while (true) {
           const buttonSelector =
             'a.btn-hero.btn-positive.btn-block.pager-more[rel="next"]';
           const buttonExists = await page.$(buttonSelector);
 
           if (!buttonExists) {
-            console.log(
-              `✅ No more "Get the next 20 Deals" button found for ${sub.link}`
-            );
-            break; // Exit loop if button is gone
+            console.log(`✅ No more "Get the next 20 Deals" button found.`);
+            break;
           }
 
           console.log(`🖱️ Clicking "Get the next 20 Deals" button...`);
           await page.click(buttonSelector);
-          await page.waitForTimeout(2000); // Wait for new items to load
+          await page.waitForTimeout(2000); // Manual delay
         }
 
-        // After the "Get the next 20 Deals" button disappears, visit product pages
         await visitProductPages(page, sub);
       } catch (error) {
         console.error(`❌ Failed to visit ${sub.link}:`, error.message);
@@ -145,51 +105,64 @@ async function visitSubcategory(page, categories) {
 }
 
 /**
- * Visits product pages by clicking "More Options" buttons and saves HTML.
- * @param {puppeteer.Page} page Puppeteer Page instance
- * @param {Object} sub Category subcategory data
+ * Visits product pages, extracts product names, and saves HTML.
  */
 async function visitProductPages(page, sub) {
+  console.log(`🔍 Extracting product links for: ${sub.name}`);
+
   const buttonSelector =
     "button.btn-stand-alone.action-menu.bottom-sheet-opener.bottom-sheet-hover-opener";
-  const productLinks = [];
 
-  // Collect all product page links from the "More Options" buttons
+  const productLinks = [];
+  const productNames = [];
+
+  // Collect product page links and names
   const buttons = await page.$$(buttonSelector);
   for (const button of buttons) {
     const productUrl = await button.evaluate((el) =>
       el.getAttribute("data-offer-url")
     );
-    if (productUrl) {
+    const productName = await button.evaluate((el) =>
+      el.getAttribute("aria-label")
+    );
+
+    if (productUrl && productName) {
       productLinks.push(productUrl);
+      productNames.push(sanitizeFolderName(productName));
     }
   }
 
-  // Visit each product link and save the HTML
-  for (const productLink of productLinks) {
+  console.log(`📦 Found ${productLinks.length} products in ${sub.name}`);
+
+  // Visit each product page and save HTML
+  for (let i = 0; i < productLinks.length; i++) {
     try {
+      const productLink = productLinks[i];
+      const productName = productNames[i];
+
       console.log(`🔗 Visiting product page: ${productLink}`);
+
       await page.goto(productLink, {
         waitUntil: "domcontentloaded",
         timeout: 30000,
       });
 
       const html = await page.content();
-      const productName = productLink.split("/")[3]; // Using the unique part of the URL as a name
-
-      const productFolderPath = path.join(
+      const subcategoryPath = path.join(
         OUTPUT_DIR,
-        sanitizeFolderName(sub.name),
-        sanitizeFolderName(productName)
+        sanitizeFolderName(sub.name)
       );
-      await fs.mkdir(productFolderPath, { recursive: true });
 
-      const htmlFilePath = path.join(productFolderPath, "product.html");
+      // Save as "<Product-Name>.html"
+      const htmlFilePath = path.join(subcategoryPath, `${productName}.html`);
       await fs.writeFile(htmlFilePath, html);
-      console.log(`✅ Saved HTML for ${productLink}`);
+
+      console.log(`✅ Saved HTML as: ${htmlFilePath}`);
+
+      await page.waitForTimeout(1500); // Manual delay to avoid blocking
     } catch (error) {
       console.error(
-        `❌ Failed to visit product page ${productLink}:`,
+        `❌ Failed to visit product page: ${productLinks[i]}`,
         error.message
       );
     }
@@ -212,17 +185,20 @@ async function main() {
   console.log("📡 Scraping categories...");
   const categories = await scrapeCategories(page);
 
+  fs.writeFile(`category.json`, JSON.stringify(categories), (err) => {
+    if (err) {
+      console.log(`see error`, err?.message);
+    }
+  });
+
   if (categories.length === 0) {
     console.error("❌ No categories found. Exiting...");
     await browser.close();
     return;
   }
 
-  console.log("📂 Creating folder structure...");
-  await createFolders(categories);
-
   console.log("🔍 Visiting subcategory pages...");
-  await visitSubcategory(page, categories);
+  await visitCategorySubcategory(page, categories);
 
   await browser.close();
   console.log("✅ Scraping complete.");

@@ -1,0 +1,684 @@
+[
+  {
+    "name": "Automotive",
+    "link": "https://www.dealnews.com/c238/Automotive/",
+    "subcategories": [
+      {
+        "name": "Automotive GPSs",
+        "link": "https://www.dealnews.com/c357/Automotive/Automotive-GPSs/"
+      },
+      {
+        "name": "Car Audio",
+        "link": "https://www.dealnews.com/c145/Automotive/Car-Audio/"
+      },
+      {
+        "name": "Car Video",
+        "link": "https://www.dealnews.com/c1121/Automotive/Car-Video/"
+      },
+      {
+        "name": "Radar Detectors",
+        "link": "https://www.dealnews.com/c662/Automotive/Radar-Detectors/"
+      }
+    ]
+  },
+  {
+    "name": "Clothing & Accessories",
+    "link": "https://www.dealnews.com/c202/Clothing-Accessories/",
+    "subcategories": [
+      {
+        "name": "Accessories",
+        "link": "https://www.dealnews.com/c275/Clothing-Accessories/Accessories/"
+      },
+      {
+        "name": "Activewear",
+        "link": "https://www.dealnews.com/c487/Clothing-Accessories/Activewear/"
+      },
+      {
+        "name": "Coats",
+        "link": "https://www.dealnews.com/c489/Clothing-Accessories/Coats/"
+      },
+      {
+        "name": "Dresses",
+        "link": "https://www.dealnews.com/c490/Clothing-Accessories/Dresses/"
+      },
+      {
+        "name": "Intimates",
+        "link": "https://www.dealnews.com/c488/Clothing-Accessories/Intimates/"
+      },
+      {
+        "name": "Jeans",
+        "link": "https://www.dealnews.com/c515/Clothing-Accessories/Jeans/"
+      },
+      {
+        "name": "Jewelry",
+        "link": "https://www.dealnews.com/c227/Clothing-Accessories/Jewelry/"
+      },
+      {
+        "name": "Kids' Clothes",
+        "link": "https://www.dealnews.com/c205/Clothing-Accessories/Kids-Clothes/"
+      },
+      {
+        "name": "Luggage & Travel Gear",
+        "link": "https://www.dealnews.com/c287/Clothing-Accessories/Luggage-Travel-Gear/"
+      },
+      {
+        "name": "Pants",
+        "link": "https://www.dealnews.com/c715/Clothing-Accessories/Pants/"
+      },
+      {
+        "name": "Shirts",
+        "link": "https://www.dealnews.com/c716/Clothing-Accessories/Shirts/"
+      },
+      {
+        "name": "Shoes",
+        "link": "https://www.dealnews.com/c280/Clothing-Accessories/Shoes/"
+      },
+      {
+        "name": "Shorts",
+        "link": "https://www.dealnews.com/c717/Clothing-Accessories/Shorts/"
+      },
+      {
+        "name": "Skirts",
+        "link": "https://www.dealnews.com/c726/Clothing-Accessories/Skirts/"
+      },
+      {
+        "name": "Sleep & Lounge",
+        "link": "https://www.dealnews.com/c718/Clothing-Accessories/Sleep-Lounge/"
+      },
+      {
+        "name": "Suits",
+        "link": "https://www.dealnews.com/c720/Clothing-Accessories/Suits/"
+      },
+      {
+        "name": "Sweaters",
+        "link": "https://www.dealnews.com/c719/Clothing-Accessories/Sweaters/"
+      },
+      {
+        "name": "Sweatshirts & Hoodies",
+        "link": "https://www.dealnews.com/c866/Clothing-Accessories/Sweatshirts-Hoodies/"
+      },
+      {
+        "name": "Swim",
+        "link": "https://www.dealnews.com/c495/Clothing-Accessories/Swim/"
+      },
+      {
+        "name": "T-Shirts",
+        "link": "https://www.dealnews.com/c721/Clothing-Accessories/T-Shirts/"
+      },
+      {
+        "name": "Underwear",
+        "link": "https://www.dealnews.com/c722/Clothing-Accessories/Underwear/"
+      }
+    ]
+  },
+  {
+    "name": "Computers",
+    "link": "https://www.dealnews.com/c39/Computers/",
+    "subcategories": [
+      {
+        "name": "Apple Computers",
+        "link": "https://www.dealnews.com/c41/Computers/Apple-Computers/"
+      },
+      {
+        "name": "Barebones PCs",
+        "link": "https://www.dealnews.com/c525/Computers/Barebones-PCs/"
+      },
+      {
+        "name": "Computer Accessories",
+        "link": "https://www.dealnews.com/c89/Computers/Computer-Accessories/"
+      },
+      {
+        "name": "Computer Services",
+        "link": "https://www.dealnews.com/c440/Computers/Computer-Services/"
+      },
+      {
+        "name": "Desktops",
+        "link": "https://www.dealnews.com/c48/Computers/Desktops/"
+      },
+      {
+        "name": "Laptops",
+        "link": "https://www.dealnews.com/c49/Computers/Laptops/"
+      },
+      {
+        "name": "Networking",
+        "link": "https://www.dealnews.com/c114/Computers/Networking/"
+      },
+      {
+        "name": "Peripherals",
+        "link": "https://www.dealnews.com/c69/Computers/Peripherals/"
+      },
+      {
+        "name": "Servers",
+        "link": "https://www.dealnews.com/c50/Computers/Servers/"
+      },
+      {
+        "name": "Software",
+        "link": "https://www.dealnews.com/c124/Computers/Software/"
+      },
+      {
+        "name": "Storage",
+        "link": "https://www.dealnews.com/c51/Computers/Storage/"
+      },
+      {
+        "name": "Upgrades / Components",
+        "link": "https://www.dealnews.com/c93/Computers/Upgrades-Components/"
+      },
+      {
+        "name": "iPad & Tablet",
+        "link": "https://www.dealnews.com/c622/Computers/iPad-Tablet/"
+      }
+    ]
+  },
+  {
+    "name": "Electronics",
+    "link": "https://www.dealnews.com/c142/Electronics/",
+    "subcategories": [
+      {
+        "name": "Audio Components",
+        "link": "https://www.dealnews.com/c143/Electronics/Audio-Components/"
+      },
+      {
+        "name": "Batteries",
+        "link": "https://www.dealnews.com/c306/Electronics/Batteries/"
+      },
+      {
+        "name": "Camcorders",
+        "link": "https://www.dealnews.com/c299/Electronics/Camcorders/"
+      },
+      {
+        "name": "Cameras",
+        "link": "https://www.dealnews.com/c167/Electronics/Cameras/"
+      },
+      {
+        "name": "Digital Picture Frames",
+        "link": "https://www.dealnews.com/c513/Electronics/Digital-Picture-Frames/"
+      },
+      {
+        "name": "Ebook Readers",
+        "link": "https://www.dealnews.com/c551/Electronics/Ebook-Readers/"
+      },
+      {
+        "name": "FRS 2-Way Radios",
+        "link": "https://www.dealnews.com/c329/Electronics/FRS-2-Way-Radios/"
+      },
+      {
+        "name": "Gadgets",
+        "link": "https://www.dealnews.com/c175/Electronics/Gadgets/"
+      },
+      {
+        "name": "MP3 Players",
+        "link": "https://www.dealnews.com/c144/Electronics/MP3-Players/"
+      },
+      {
+        "name": "Phones & Cell Phones",
+        "link": "https://www.dealnews.com/c171/Electronics/Phones-Cell-Phones/"
+      },
+      {
+        "name": "Portable Speakers",
+        "link": "https://www.dealnews.com/c837/Electronics/Portable-Speakers/"
+      },
+      {
+        "name": "Power Management",
+        "link": "https://www.dealnews.com/c371/Electronics/Power-Management/"
+      },
+      {
+        "name": "Smart Home",
+        "link": "https://www.dealnews.com/f1912/Smart-Home/"
+      },
+      {
+        "name": "Streaming Media Players",
+        "link": "https://www.dealnews.com/c452/Electronics/Streaming-Media-Players/"
+      },
+      {
+        "name": "TVs",
+        "link": "https://www.dealnews.com/c159/Electronics/TVs/"
+      },
+      {
+        "name": "Universal Remote Controls",
+        "link": "https://www.dealnews.com/c328/Electronics/Universal-Remote-Controls/"
+      },
+      {
+        "name": "Video & Audio Cables",
+        "link": "https://www.dealnews.com/c540/Electronics/Video-Audio-Cables/"
+      },
+      {
+        "name": "Video Components",
+        "link": "https://www.dealnews.com/c156/Electronics/Video-Components/"
+      },
+      {
+        "name": "Wearable Technology",
+        "link": "https://www.dealnews.com/c911/Electronics/Wearable-Technology/"
+      },
+      {
+        "name": "iPods",
+        "link": "https://www.dealnews.com/c387/Electronics/iPods/"
+      }
+    ]
+  },
+  {
+    "name": "Everything Else",
+    "link": "https://www.dealnews.com/c231/Everything-Else/",
+    "subcategories": [
+      { "name": "Podcasts", "link": "https://www.dealnews.com/" }
+    ]
+  },
+  {
+    "name": "Financial Services",
+    "link": "https://www.dealnews.com/c702/Financial-Services/",
+    "subcategories": [
+      {
+        "name": "Credit Cards",
+        "link": "https://www.dealnews.com/c522/Financial-Services/Credit-Cards/"
+      }
+    ]
+  },
+  {
+    "name": "Flags",
+    "link": "https://www.dealnews.com/c536/Flags/",
+    "subcategories": [
+      {
+        "name": "Yahoo Dotd",
+        "link": "https://www.dealnews.com/c537/Flags/Yahoo-Dotd/"
+      }
+    ]
+  },
+  {
+    "name": "Gaming & Toys",
+    "link": "https://www.dealnews.com/c186/Gaming-Toys/",
+    "subcategories": [
+      {
+        "name": "Card And Board Games",
+        "link": "https://www.dealnews.com/c294/Gaming-Toys/Card-And-Board-Games/"
+      },
+      {
+        "name": "Computer Games",
+        "link": "https://www.dealnews.com/c187/Gaming-Toys/Computer-Games/"
+      },
+      {
+        "name": "Toys & Hobbies",
+        "link": "https://www.dealnews.com/c226/Gaming-Toys/Toys-Hobbies/"
+      },
+      {
+        "name": "Video Games",
+        "link": "https://www.dealnews.com/c191/Gaming-Toys/Video-Games/"
+      }
+    ]
+  },
+  {
+    "name": "Gift Cards",
+    "link": "https://www.dealnews.com/c859/Gift-Cards/",
+    "subcategories": []
+  },
+  {
+    "name": "Health & Beauty",
+    "link": "https://www.dealnews.com/c756/Health-Beauty/",
+    "subcategories": [
+      {
+        "name": "Beauty",
+        "link": "https://www.dealnews.com/c759/Health-Beauty/Beauty/"
+      },
+      {
+        "name": "Health",
+        "link": "https://www.dealnews.com/c765/Health-Beauty/Health/"
+      }
+    ]
+  },
+  {
+    "name": "Home & Garden",
+    "link": "https://www.dealnews.com/c196/Home-Garden/",
+    "subcategories": [
+      {
+        "name": "Appliances",
+        "link": "https://www.dealnews.com/c304/Home-Garden/Appliances/"
+      },
+      {
+        "name": "Babies & Kids Items",
+        "link": "https://www.dealnews.com/c224/Home-Garden/Babies-Kids-Items/"
+      },
+      {
+        "name": "Bed & Bath",
+        "link": "https://www.dealnews.com/c360/Home-Garden/Bed-Bath/"
+      },
+      {
+        "name": "Cleaning Supplies",
+        "link": "https://www.dealnews.com/c637/Home-Garden/Cleaning-Supplies/"
+      },
+      {
+        "name": "Crafts",
+        "link": "https://www.dealnews.com/c311/Home-Garden/Crafts/"
+      },
+      {
+        "name": "Decor",
+        "link": "https://www.dealnews.com/c200/Home-Garden/Decor/"
+      },
+      {
+        "name": "Food & Drink",
+        "link": "https://www.dealnews.com/c213/Home-Garden/Food-Drink/"
+      },
+      {
+        "name": "Garden",
+        "link": "https://www.dealnews.com/c198/Home-Garden/Garden/"
+      },
+      {
+        "name": "Home Furniture",
+        "link": "https://www.dealnews.com/c199/Home-Garden/Home-Furniture/"
+      },
+      {
+        "name": "Home Improvement",
+        "link": "https://www.dealnews.com/c862/Home-Garden/Home-Improvement/"
+      },
+      {
+        "name": "Home Security",
+        "link": "https://www.dealnews.com/c492/Home-Garden/Home-Security/"
+      },
+      {
+        "name": "Kitchen",
+        "link": "https://www.dealnews.com/c201/Home-Garden/Kitchen/"
+      },
+      {
+        "name": "Laundry Supplies",
+        "link": "https://www.dealnews.com/c804/Home-Garden/Laundry-Supplies/"
+      },
+      {
+        "name": "Light Bulbs",
+        "link": "https://www.dealnews.com/c810/Home-Garden/Light-Bulbs/"
+      },
+      {
+        "name": "Party Supplies",
+        "link": "https://www.dealnews.com/c279/Home-Garden/Party-Supplies/"
+      },
+      {
+        "name": "Pets",
+        "link": "https://www.dealnews.com/c221/Home-Garden/Pets/"
+      },
+      {
+        "name": "Seasonal/Holidays",
+        "link": "https://www.dealnews.com/c276/Home-Garden/Seasonal-Holidays/"
+      },
+      {
+        "name": "Tools & Hardware",
+        "link": "https://www.dealnews.com/c197/Home-Garden/Tools-Hardware/"
+      }
+    ]
+  },
+  {
+    "name": "Local",
+    "link": "https://www.dealnews.com/local.html",
+    "subcategories": []
+  },
+  {
+    "name": "Movies, Music, Books",
+    "link": "https://www.dealnews.com/c178/Movies-Music-Books/",
+    "subcategories": [
+      {
+        "name": "Books & Magazines",
+        "link": "https://www.dealnews.com/c177/Movies-Music-Books/Books-Magazines/"
+      },
+      {
+        "name": "Movies, TV Shows & Videos",
+        "link": "https://www.dealnews.com/c500/Movies-Music-Books/Movies-TV-Shows-Videos/"
+      },
+      {
+        "name": "Music",
+        "link": "https://www.dealnews.com/c181/Movies-Music-Books/Music/"
+      },
+      {
+        "name": "Video Downloads",
+        "link": "https://www.dealnews.com/c477/Movies-Music-Books/Video-Downloads/"
+      }
+    ]
+  },
+  {
+    "name": "Office & School Supplies",
+    "link": "https://www.dealnews.com/c182/Office-School-Supplies/",
+    "subcategories": [
+      {
+        "name": "Office Furniture",
+        "link": "https://www.dealnews.com/c184/Office-School-Supplies/Office-Furniture/"
+      },
+      {
+        "name": "Supplies",
+        "link": "https://www.dealnews.com/c281/Office-School-Supplies/Supplies/"
+      }
+    ]
+  },
+  {
+    "name": "Plugs",
+    "link": "https://www.dealnews.com/c259/Plugs/",
+    "subcategories": [
+      {
+        "name": "Basements",
+        "link": "https://www.dealnews.com/c261/Plugs/Basements/"
+      },
+      { "name": "DealNews Blog", "link": "https://www.dealnews.com/features/" },
+      {
+        "name": "Dealcam",
+        "link": "https://www.dealnews.com/c292/Plugs/Dealcam/"
+      },
+      {
+        "name": "Dealink",
+        "link": "https://www.dealnews.com/c291/Plugs/Dealink/"
+      },
+      {
+        "name": "Dealram",
+        "link": "https://www.dealnews.com/c290/Plugs/Dealram/"
+      },
+      {
+        "name": "Dealtips",
+        "link": "https://www.dealnews.com/c354/Plugs/Dealtips/"
+      },
+      {
+        "name": "Education",
+        "link": "https://www.dealnews.com/c262/Plugs/Education/"
+      },
+      {
+        "name": "Ending Today",
+        "link": "https://www.dealnews.com/c378/Plugs/Ending-Today/"
+      },
+      {
+        "name": "Fundraisers",
+        "link": "https://www.dealnews.com/c379/Plugs/Fundraisers/"
+      },
+      {
+        "name": "Gift Ideas",
+        "link": "https://www.dealnews.com/c480/Plugs/Gift-Ideas/"
+      },
+      {
+        "name": "Main Sites",
+        "link": "https://www.dealnews.com/c260/Plugs/Main-Sites/"
+      },
+      {
+        "name": "Marriage Proposals",
+        "link": "https://www.dealnews.com/c545/Plugs/Marriage-Proposals/"
+      },
+      {
+        "name": "Press Releases",
+        "link": "https://www.dealnews.com/c355/Plugs/Press-Releases/"
+      }
+    ]
+  },
+  {
+    "name": "Site News",
+    "link": "https://www.dealnews.com/c256/Site-News/",
+    "subcategories": [
+      {
+        "name": "April Fool's",
+        "link": "https://www.dealnews.com/c282/Site-News/April-Fools/"
+      },
+      {
+        "name": "Bottom Site News",
+        "link": "https://www.dealnews.com/c258/Site-News/Bottom-Site-News/"
+      },
+      {
+        "name": "Sweepstakes Winners",
+        "link": "https://www.dealnews.com/c310/Site-News/Sweepstakes-Winners/"
+      },
+      {
+        "name": "Top Site News",
+        "link": "https://www.dealnews.com/c257/Site-News/Top-Site-News/"
+      }
+    ]
+  },
+  {
+    "name": "Special Occasion",
+    "link": "https://www.dealnews.com/c636/Special-Occasion/",
+    "subcategories": [
+      {
+        "name": "Gifts, Flowers & Cards",
+        "link": "https://www.dealnews.com/c218/Special-Occasion/Gifts-Flowers-Cards/"
+      }
+    ]
+  },
+  {
+    "name": "Sports & Fitness",
+    "link": "https://www.dealnews.com/c211/Sports-Fitness/",
+    "subcategories": [
+      {
+        "name": "Bicycling",
+        "link": "https://www.dealnews.com/c476/Sports-Fitness/Bicycling/"
+      },
+      {
+        "name": "Camping & Outdoors",
+        "link": "https://www.dealnews.com/c298/Sports-Fitness/Camping-Outdoors/"
+      },
+      {
+        "name": "Exercise Equipment",
+        "link": "https://www.dealnews.com/c655/Sports-Fitness/Exercise-Equipment/"
+      },
+      {
+        "name": "Golf Items",
+        "link": "https://www.dealnews.com/c212/Sports-Fitness/Golf-Items/"
+      },
+      {
+        "name": "Running",
+        "link": "https://www.dealnews.com/c382/Sports-Fitness/Running/"
+      }
+    ]
+  },
+  {
+    "name": "Store Events",
+    "link": "https://www.dealnews.com/c40/Store-Events/",
+    "subcategories": [
+      {
+        "name": "4th of July",
+        "link": "https://www.dealnews.com/fourth-of-july-sales/"
+      },
+      {
+        "name": "After Christmas Sales",
+        "link": "https://www.dealnews.com/after-christmas-sales/"
+      },
+      {
+        "name": "Amazon Prime Day",
+        "link": "https://www.dealnews.com/amazon-prime-day/"
+      },
+      {
+        "name": "Back to School",
+        "link": "https://www.dealnews.com/back-to-school.html"
+      },
+      {
+        "name": "Black Friday",
+        "link": "https://www.dealnews.com/c482/Store-Events/Black-Friday/"
+      },
+      {
+        "name": "Cyber Monday",
+        "link": "https://www.dealnews.com/cyber-monday/"
+      },
+      {
+        "name": "Father's Day Gifts",
+        "link": "https://www.dealnews.com/fathers-day-gifts.html"
+      },
+      {
+        "name": "Graduation Gifts",
+        "link": "https://www.dealnews.com/graduation-gifts.html"
+      },
+      {
+        "name": "Green Monday",
+        "link": "https://www.dealnews.com/green-monday/"
+      },
+      {
+        "name": "Halloween Items",
+        "link": "https://www.dealnews.com/c544/Store-Events/Halloween-Items/"
+      },
+      {
+        "name": "Labor Day",
+        "link": "https://www.dealnews.com/labor-day-sales/"
+      },
+      {
+        "name": "Macworld Expo",
+        "link": "https://www.dealnews.com/c534/Store-Events/Macworld-Expo/"
+      },
+      {
+        "name": "Memorial Day Sales",
+        "link": "https://www.dealnews.com/memorial-day-sales/"
+      },
+      {
+        "name": "Mother's Day Gifts",
+        "link": "https://www.dealnews.com/mothers-day-gifts.html"
+      },
+      {
+        "name": "Presidents' Day Sales",
+        "link": "https://www.dealnews.com/presidents-day-sales/"
+      },
+      {
+        "name": "Shipping",
+        "link": "https://www.dealnews.com/c232/Store-Events/Shipping/"
+      },
+      {
+        "name": "Singles Awareness Day",
+        "link": "https://www.dealnews.com/c1178/Store-Events/Singles-Awareness-Day/"
+      },
+      {
+        "name": "Spring Break",
+        "link": "https://www.dealnews.com/c624/Store-Events/Spring-Break/"
+      },
+      {
+        "name": "Tax Day Sales",
+        "link": "https://www.dealnews.com/c682/Store-Events/Tax-Day-Sales/"
+      },
+      {
+        "name": "Valentine's Day",
+        "link": "https://www.dealnews.com/valentines-gifts.html"
+      }
+    ]
+  },
+  {
+    "name": "Travel & Entertainment",
+    "link": "https://www.dealnews.com/c206/Travel-Entertainment/",
+    "subcategories": [
+      {
+        "name": "Airfare",
+        "link": "https://www.dealnews.com/c207/Travel-Entertainment/Airfare/"
+      },
+      {
+        "name": "Car Rentals",
+        "link": "https://www.dealnews.com/c209/Travel-Entertainment/Car-Rentals/"
+      },
+      {
+        "name": "Cruises",
+        "link": "https://www.dealnews.com/c629/Travel-Entertainment/Cruises/"
+      },
+      {
+        "name": "Hotels",
+        "link": "https://www.dealnews.com/c208/Travel-Entertainment/Hotels/"
+      },
+      {
+        "name": "Movie Tickets",
+        "link": "https://www.dealnews.com/c654/Travel-Entertainment/Movie-Tickets/"
+      },
+      {
+        "name": "Things to Do",
+        "link": "https://www.dealnews.com/c333/Travel-Entertainment/Things-to-Do/"
+      },
+      {
+        "name": "Vacations",
+        "link": "https://www.dealnews.com/c210/Travel-Entertainment/Vacations/"
+      }
+    ]
+  },
+  {
+    "name": "Video Game Accessories",
+    "link": "https://www.dealnews.com/c1182/Video-Game-Accessories/",
+    "subcategories": []
+  },
+  { "name": "Unknown", "link": "", "subcategories": [] }
+]
