@@ -85,6 +85,12 @@ async function visitCategorySubcategory(page, categories) {
     }]
     
     now you have to go every category and sub category (when you go every category and sub category on the way you have create category and sub category nested folder) link then if you not found any "Get the next {{number}} Deals" button with style : 'a.btn-hero.btn-positive.btn-block.pager-more[rel="next"]'; then click every products url and goto in the product page and take whole html data  and save the file (save file in the specific category folder if the file founds from the category link or save file in sub category folder  if file founds in the specific sub category folder)
+
+    if you found any "Get the next {{number}} Deals" button with style : 'a.btn-hero.btn-positive.btn-block.pager-more[rel="next"]'; then click the button until it's disappeared. after disappearing the button click every products url and goto in the product page and take whole html data  and save the file (save file in the specific category folder if the file founds from the category link or save file in sub category folder  if file founds in the specific sub category folder)
+
+*** button click er jonno ekta function
+*** page er data collect korar jonno ekta function
+*** new page theke html newar jonno ekta function 
    
    * 
    * 

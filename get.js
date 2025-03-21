@@ -24,7 +24,7 @@ async function launchBrowser() {
 async function scrapeCategories(page) {
   try {
     console.log("🌍 Navigating to", BASE_URL);
-    await page.goto(BASE_URL, { waitUntil: "networkidle2", timeout: 60000 });
+    await safeGoto(page, BASE_URL);
 
     return await page.evaluate(() => {
       const categories = [];
@@ -70,52 +70,87 @@ function sanitizeFolderName(name) {
 /**
  * Visits subcategory pages and extracts product links.
  */
-async function visitCategorySubcategory(page, categories) {
-  /**
-   
-   my categories data is like this
-   [{
-    "name": "Automotive",
-    "link": "https://www.dealnews.com/c238/Automotive/",
-    "subcategories": [
-      {
-        "name": "Automotive GPSs",
-        "link": "https://www.dealnews.com/c357/Automotive/Automotive-GPSs/"
-      }]
-    }]
-    
-    now you have to go every category and sub category (when you go every category and sub category on the way you have create category and sub category nested folder) link then if you not found any "Get the next {{number}} Deals" button with style : 'a.btn-hero.btn-positive.btn-block.pager-more[rel="next"]'; then click every products url and goto in the product page and take whole html data  and save the file (save file in the specific category folder if the file founds from the category link or save file in sub category folder  if file founds in the specific sub category folder)
-   
-   * 
-   * 
-   */
-
+async function visitCategorySubcategory(pagei, categories) {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.setDefaultNavigationTimeout(120000);
+  await page.setDefaultTimeout(120000);
   for (const category of categories) {
     for (const sub of category.subcategories) {
       try {
-        console.log(`🔗 Visiting: ${sub.link}`);
-        await page.goto(sub.link, {
-          waitUntil: "domcontentloaded",
-          timeout: 30000,
+        console.log(`see link`, sub?.link);
+
+        const contentPage = await page.goto(sub.link);
+
+        const content = await contentPage.content();
+
+        fs.writeFile(`content.html`, content, (error) => {
+          if (error) {
+            console.error(`Failed to write content.html`, error?.message);
+          }
         });
 
-        // Keep clicking the "Get the next 20 Deals" button
-        while (true) {
-          const buttonSelector =
-            'a.btn-hero.btn-positive.btn-block.pager-more[rel="next"]';
-          const buttonExists = await page.$(buttonSelector);
+        // const success = await safeGoto(page, sub.link);
 
-          if (!buttonExists) {
-            console.log(`✅ No more "Get the next 20 Deals" button found.`);
-            break;
-          }
+        // if (!success) {
+        //   console.log(`skipping page due to error: ${sub.link}`);
+        // }
 
-          console.log(`🖱️ Clicking "Get the next 20 Deals" button...`);
-          await page.click(buttonSelector);
-          await page.waitForTimeout(2000); // Manual delay
-        }
+        // const buttonSelector =
+        //   'a.btn-hero.btn-positive.btn-block.pager-more[rel="next"]';
+        // const buttonExists = await page.$(buttonSelector);
 
-        await visitProductPages(page, sub);
+        // while (buttonExists) {
+        //   await page.click(buttonSelector);
+        // }
+
+        // const articles = await page.evaluate(() => {
+        //   return Array.from(document.querySelectorAll("div")).map((article) => {
+        //     const shopElement = article.querySelector("a.title-link");
+        //     const productElement = article.querySelector("a.title-link");
+
+        //     // Extract button data-offer-url
+        //     const linkElement = article.querySelector(
+        //       "button.btn-stand-alone.action-menu.bottom-sheet-opener.bottom-sheet-hover-opener"
+        //     );
+
+        //     return {
+        //       shop: shopElement ? shopElement.innerText.trim() : "No Title",
+        //       productLink: productElement
+        //         ? productElement.getAttribute("href")
+        //         : "No Product Link",
+        //       offerLink: linkElement
+        //         ? linkElement.getAttribute("data-offer-url")
+        //         : "No Offer Link",
+        //     };
+        //   });
+        // });
+
+        //  const buttonSelectorNew =
+        //    "button.btn-stand-alone.action-menu.bottom-sheet-opener.bottom-sheet-hover-opener";
+
+        //  const productLinks = [];
+        //  const productNames = [];
+
+        //  // Collect product page links and names
+        //  const buttons = await page.$$(buttonSelectorNew);
+        //  for (const button of buttons) {
+        //    const productUrl = await button.evaluate((el) =>
+        //      el.getAttribute("data-offer-url")
+        //    );
+        //    const productName = await button.evaluate((el) =>
+        //      el.getAttribute("aria-label")
+        //    );
+
+        //    if (productUrl && productName) {
+        //      productLinks.push(productUrl);
+        //      productNames.push(sanitizeFolderName(productName));
+        //    }
+        //  }
+
+        // console.log(`see product links`, articles);
+
+        // await visitProductPages(page, sub);
       } catch (error) {
         console.error(`❌ Failed to visit ${sub.link}:`, error.message);
       }
@@ -127,8 +162,6 @@ async function visitCategorySubcategory(page, categories) {
  * Visits product pages, extracts product names, and saves HTML.
  */
 async function visitProductPages(page, sub) {
-  console.log(`🔍 Extracting product links for: ${sub.name}`);
-
   const buttonSelector =
     "button.btn-stand-alone.action-menu.bottom-sheet-opener.bottom-sheet-hover-opener";
 
@@ -177,8 +210,6 @@ async function visitProductPages(page, sub) {
       await fs.writeFile(htmlFilePath, html);
 
       console.log(`✅ Saved HTML as: ${htmlFilePath}`);
-
-      await page.waitForTimeout(1500); // Manual delay to avoid blocking
     } catch (error) {
       console.error(
         `❌ Failed to visit product page: ${productLinks[i]}`,
@@ -188,9 +219,19 @@ async function visitProductPages(page, sub) {
   }
 }
 
-/**
- * Main function to execute the scraper.
- */
+async function safeGoto(page, url, retries = 3) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      await page.goto(url, { waitUntil: "domcontentloaded", timeout: 120000 });
+      return true;
+    } catch (error) {
+      console.error(`❌ Attempt ${attempt} failed for ${url}:`, error);
+      if (attempt === retries) return false;
+      await new Promise((r) => setTimeout(r, 5000)); // Wait before retrying
+    }
+  }
+}
+
 async function main() {
   console.log("🚀 Launching Puppeteer...");
   const browser = await launchBrowser();
@@ -201,7 +242,9 @@ async function main() {
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
   );
 
-  console.log("📡 Scraping categories...");
+  await page.setDefaultNavigationTimeout(120000);
+  await page.setDefaultTimeout(120000);
+
   const categories = await scrapeCategories(page);
 
   fs.writeFile(`category.json`, JSON.stringify(categories), (err) => {
