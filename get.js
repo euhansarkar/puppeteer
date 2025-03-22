@@ -1,6 +1,6 @@
-import puppeteer from "puppeteer";
 import fs from "fs/promises";
 import path from "path";
+import puppeteer from "puppeteer";
 import { fileURLToPath } from "url";
 
 // Get directory path for ES Modules
@@ -70,6 +70,49 @@ function sanitizeFolderName(name) {
 /**
  * Visits subcategory pages and extracts product links.
  */
+
+async function clickUntilGone(page) {
+  const MAX_ATTEMPTS = 50;
+  let clicked = 0;
+
+  while (clicked < MAX_ATTEMPTS) {
+    // Check if button exists AND is visible
+    const button = await page.$(".btn-hero.btn-positive.btn-block.pager-more");
+
+    if (!button) {
+      console.log("Button does not exist");
+      break;
+    }
+
+    const isVisible = await button.isVisible();
+    if (!isVisible) {
+      console.log("Button is hidden");
+      await button.dispose();
+      break;
+    }
+
+    // Click the button
+    console.log(`Clicking button (attempt ${clicked + 1})`);
+    await Promise.all([
+      button.click(),
+      page
+        .waitForNavigation({ waitUntil: "networkidle0", timeout: 10000 })
+        .catch(() => {}), // Ignore navigation timeout errors
+    ]);
+
+    // Clean up
+    await button.dispose();
+
+    // Short wait to allow DOM update
+    await page.page
+      .waitForNavigation({ waitUntil: "networkidle0", timeout: 10000 })
+      .catch(() => {});
+
+    clicked++;
+  }
+  console.log(`Total clicks: ${clicked}`);
+}
+
 async function visitCategorySubcategory(pagei, categories) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -78,8 +121,6 @@ async function visitCategorySubcategory(pagei, categories) {
   for (const category of categories) {
     for (const sub of category.subcategories) {
       try {
-        console.log(`see link`, sub?.link);
-
         const contentPage = await page.goto(sub.link);
 
         const content = await contentPage.content();
@@ -96,35 +137,33 @@ async function visitCategorySubcategory(pagei, categories) {
         //   console.log(`skipping page due to error: ${sub.link}`);
         // }
 
-        // const buttonSelector =
-        //   'a.btn-hero.btn-positive.btn-block.pager-more[rel="next"]';
-        // const buttonExists = await page.$(buttonSelector);
+        await clickUntilGone(page);
 
-        // while (buttonExists) {
-        //   await page.click(buttonSelector);
-        // }
+        const articles = await page.evaluate(() => {
+          return Array.from(
+            document.querySelectorAll("div.content-card-initial")
+          ).map((article) => {
+            const shopElement = article.querySelector("a.title-link");
+            const productElement = article.querySelector("a.title-link");
 
-        // const articles = await page.evaluate(() => {
-        //   return Array.from(document.querySelectorAll("div")).map((article) => {
-        //     const shopElement = article.querySelector("a.title-link");
-        //     const productElement = article.querySelector("a.title-link");
+            // Extract button data-offer-url
+            const buttonElement = document.querySelector(
+              'button[data-bottom-sheet-id="overflow-menu-content-card"]'
+            );
 
-        //     // Extract button data-offer-url
-        //     const linkElement = article.querySelector(
-        //       "button.btn-stand-alone.action-menu.bottom-sheet-opener.bottom-sheet-hover-opener"
-        //     );
+            return {
+              shop: shopElement ? shopElement.innerText.trim() : "No Title",
+              productLink: productElement
+                ? productElement.getAttribute("href")
+                : "No Product Link",
+              offerLink: buttonElement
+                ? buttonElement.getAttribute("data-offer-url")
+                : "No Offer Link",
+            };
+          });
+        });
 
-        //     return {
-        //       shop: shopElement ? shopElement.innerText.trim() : "No Title",
-        //       productLink: productElement
-        //         ? productElement.getAttribute("href")
-        //         : "No Product Link",
-        //       offerLink: linkElement
-        //         ? linkElement.getAttribute("data-offer-url")
-        //         : "No Offer Link",
-        //     };
-        //   });
-        // });
+        console.log(`see articles ${sub?.link}`, articles);
 
         //  const buttonSelectorNew =
         //    "button.btn-stand-alone.action-menu.bottom-sheet-opener.bottom-sheet-hover-opener";
