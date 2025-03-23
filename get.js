@@ -68,229 +68,195 @@ function sanitizeFolderName(name) {
 }
 
 /**
- * Visits subcategory pages and extracts product links.
+ * Clicks "Load More" button until it's gone.
  */
-
 async function clickUntilGone(page) {
   const MAX_ATTEMPTS = 50;
   let clicked = 0;
 
   while (clicked < MAX_ATTEMPTS) {
-    // Check if button exists AND is visible
     const button = await page.$(".btn-hero.btn-positive.btn-block.pager-more");
+    if (!button) break;
 
-    if (!button) {
-      console.log("Button does not exist");
-      break;
-    }
+    const isVisible = (await button.boundingBox()) !== null;
+    if (!isVisible) break;
 
-    const isVisible = await button.isVisible();
-    if (!isVisible) {
-      console.log("Button is hidden");
-      await button.dispose();
-      break;
-    }
-
-    // Click the button
     console.log(`Clicking button (attempt ${clicked + 1})`);
-    await Promise.all([
-      button.click(),
-      page
-        .waitForNavigation({ waitUntil: "networkidle0", timeout: 10000 })
-        .catch(() => {}), // Ignore navigation timeout errors
-    ]);
-
-    // Clean up
-    await button.dispose();
-
-    // Short wait to allow DOM update
-    await page.page
-      .waitForNavigation({ waitUntil: "networkidle0", timeout: 10000 })
-      .catch(() => {});
-
+    await Promise.all([button.click(), page.waitForTimeout(2000)]);
     clicked++;
   }
   console.log(`Total clicks: ${clicked}`);
 }
 
-async function visitCategorySubcategory(pagei, categories) {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
+/**
+ * Visits subcategory pages and extracts product links.
+ */
+async function visitCategorySubcategory(page, categories) {
   await page.setDefaultNavigationTimeout(120000);
   await page.setDefaultTimeout(120000);
+
   for (const category of categories) {
+    const categoryData = [];
+
     for (const sub of category.subcategories) {
       try {
-        const contentPage = await page.goto(sub.link);
+        await safeGoto(page, sub.link);
 
-        const content = await contentPage.content();
+        // const content = await page.content();
+        //  await fs.writeFile(`content.html`, content);
+        let pageNumber = 1;
 
-        fs.writeFile(`content.html`, content, (error) => {
-          if (error) {
-            console.error(`Failed to write content.html`, error?.message);
-          }
-        });
+        while (true) {
+          const url = `${sub?.link}?start=${pageNumber}`;
 
-        // const success = await safeGoto(page, sub.link);
+          const success = await safeGoto(page, url);
+          if (!success) break;
 
-        // if (!success) {
-        //   console.log(`skipping page due to error: ${sub.link}`);
-        // }
+          const articles = await page.evaluate(() => {
+            return Array.from(
+              document.querySelectorAll("div.content-card-initial")
+            ).map((article) => {
+              const shopElement = article.querySelector(
+                "div.title.limit-height.limit-height-large-2.limit-height-small-2"
+              );
+              const productElement = article.querySelector("a.title-link");
+              const buttonElement = document.querySelector(
+                'button[data-bottom-sheet-id="overflow-menu-content-card"]'
+              );
 
-        await clickUntilGone(page);
+              // return {
+              //   shop: shopElement
+              //     ? shopElement.getAttribute("title")
+              //     : "No Title",
+              //   productLink: productElement
+              //     ? productElement.getAttribute("href")
+              //     : "No Product Link",
+              //   offerLink: buttonElement
+              //     ? buttonElement.getAttribute("data-offer-url")
+              //     : "No Offer Link",
+              // };
 
-        const articles = await page.evaluate(() => {
-          return Array.from(
-            document.querySelectorAll("div.content-card-initial")
-          ).map((article) => {
-            const shopElement = article.querySelector("a.title-link");
-            const productElement = article.querySelector("a.title-link");
-
-            // Extract button data-offer-url
-            const buttonElement = document.querySelector(
-              'button[data-bottom-sheet-id="overflow-menu-content-card"]'
-            );
-
-            return {
-              shop: shopElement ? shopElement.innerText.trim() : "No Title",
-              productLink: productElement
-                ? productElement.getAttribute("href")
-                : "No Product Link",
-              offerLink: buttonElement
-                ? buttonElement.getAttribute("data-offer-url")
-                : "No Offer Link",
-            };
+              return visitProductPage(
+                page,
+                buttonElement?.getAttribute("data-offer-url")
+              );
+            });
           });
-        });
 
-        console.log(`see articles ${sub?.link}`, articles);
+          if (articles?.length > 0) {
+            categoryData?.push(articles);
+          }
 
-        //  const buttonSelectorNew =
-        //    "button.btn-stand-alone.action-menu.bottom-sheet-opener.bottom-sheet-hover-opener";
+          // console.log(`🛒 Found products in ${sub?.link}:`, articles);
 
-        //  const productLinks = [];
-        //  const productNames = [];
-
-        //  // Collect product page links and names
-        //  const buttons = await page.$$(buttonSelectorNew);
-        //  for (const button of buttons) {
-        //    const productUrl = await button.evaluate((el) =>
-        //      el.getAttribute("data-offer-url")
-        //    );
-        //    const productName = await button.evaluate((el) =>
-        //      el.getAttribute("aria-label")
-        //    );
-
-        //    if (productUrl && productName) {
-        //      productLinks.push(productUrl);
-        //      productNames.push(sanitizeFolderName(productName));
-        //    }
-        //  }
-
-        // console.log(`see product links`, articles);
+          pageNumber += 20;
+        }
 
         // await visitProductPages(page, sub);
       } catch (error) {
         console.error(`❌ Failed to visit ${sub.link}:`, error.message);
       }
     }
+
+    // await fs.mkdir(path.join(OUTPUT_DIR, sanitizeFolderName(category.name)), {
+    //   recursive: true,
+    // });
+    // await fs.writeFile(
+    //   path.join(
+    //     OUTPUT_DIR,
+    //     sanitizeFolderName(category.name),
+    //     `${category?.name}.json`
+    //   )
+    // );
+
+    console.log(`${category?.name} data`, categoryData);
   }
 }
 
 /**
  * Visits product pages, extracts product names, and saves HTML.
  */
-async function visitProductPages(page, sub) {
-  const buttonSelector =
-    "button.btn-stand-alone.action-menu.bottom-sheet-opener.bottom-sheet-hover-opener";
+async function visitProductPage(page, link) {
+  await safeGoto(page, link);
 
-  const productLinks = [];
-  const productNames = [];
+  const data = await page.evaluate(() => {
+    return {
+      name:
+        document.querySelector("h1.product-title")?.textContent.trim() ||
+        "No Product Name",
+      description: document
+        .querySelector("a.title-link")
+        ?.getAttribute("aria-label")
+        ?.textContent.trim()
+        .replace(/\n/g, ""),
+      price:
+        document.querySelector("div.callout")?.textContent.trim() || "no price",
+      summery:
+        document.querySelector("div.snippet summary")?.textContent.trim() ||
+        "no summary",
+      expires:
+        document.querySelector("div.row-text")?.textContent.trim() ||
+        "no expires",
+      images: Array.from(
+        document.querySelectorAll("div.product-image img")
+      ).map((img) => img.getAttribute("src")),
+    };
+  });
 
-  // Collect product page links and names
-  const buttons = await page.$$(buttonSelector);
-  for (const button of buttons) {
-    const productUrl = await button.evaluate((el) =>
-      el.getAttribute("data-offer-url")
-    );
-    const productName = await button.evaluate((el) =>
-      el.getAttribute("aria-label")
-    );
-
-    if (productUrl && productName) {
-      productLinks.push(productUrl);
-      productNames.push(sanitizeFolderName(productName));
-    }
-  }
-
-  console.log(`📦 Found ${productLinks.length} products in ${sub.name}`);
-
-  // Visit each product page and save HTML
-  for (let i = 0; i < productLinks.length; i++) {
-    try {
-      const productLink = productLinks[i];
-      const productName = productNames[i];
-
-      console.log(`🔗 Visiting product page: ${productLink}`);
-
-      await page.goto(productLink, {
-        waitUntil: "domcontentloaded",
-        timeout: 30000,
-      });
-
-      const html = await page.content();
-      const subcategoryPath = path.join(
-        OUTPUT_DIR,
-        sanitizeFolderName(sub.name)
-      );
-
-      // Save as "<Product-Name>.html"
-      const htmlFilePath = path.join(subcategoryPath, `${productName}.html`);
-      await fs.writeFile(htmlFilePath, html);
-
-      console.log(`✅ Saved HTML as: ${htmlFilePath}`);
-    } catch (error) {
-      console.error(
-        `❌ Failed to visit product page: ${productLinks[i]}`,
-        error.message
-      );
-    }
-  }
+  return data;
 }
 
+/**
+ * Navigates safely with retries.
+ */
 async function safeGoto(page, url, retries = 3) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      await page.goto(url, { waitUntil: "domcontentloaded", timeout: 120000 });
-      return true;
+      const response = await page.goto(url, {
+        waitUntil: "domcontentloaded",
+        timeout: 120000,
+      });
+
+      if (!response || response.status() >= 400) {
+        console.error(
+          `❌ Page not found: ${url} (Status: ${
+            response ? response.status() : "No Response"
+          })`
+        );
+        return false;
+      }
+
+      return true; // Page exists
     } catch (error) {
       console.error(`❌ Attempt ${attempt} failed for ${url}:`, error);
-      if (attempt === retries) return false;
-      await new Promise((r) => setTimeout(r, 5000)); // Wait before retrying
+      if (attempt === retries) {
+        console.error(
+          `🚨 Failed to navigate to ${url} after ${retries} attempts.`
+        );
+        return false;
+      }
+      await page.waitForTimeout(5000);
     }
   }
 }
 
+/**
+ * Main function to start scraping.
+ */
 async function main() {
   console.log("🚀 Launching Puppeteer...");
   const browser = await launchBrowser();
   const page = await browser.newPage();
 
-  // Set a user-agent to bypass bot detection
   await page.setUserAgent(
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
   );
-
   await page.setDefaultNavigationTimeout(120000);
   await page.setDefaultTimeout(120000);
 
   const categories = await scrapeCategories(page);
 
-  fs.writeFile(`category.json`, JSON.stringify(categories), (err) => {
-    if (err) {
-      console.log(`see error`, err?.message);
-    }
-  });
+  await fs.writeFile(`category.json`, JSON.stringify(categories));
 
   if (categories.length === 0) {
     console.error("❌ No categories found. Exiting...");
