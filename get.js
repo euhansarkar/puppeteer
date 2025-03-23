@@ -61,31 +61,71 @@ async function scrapeCategories(page) {
 }
 
 /**
- * Sanitizes folder/file names.
+ * Visits and scrapes a product page.
  */
-function sanitizeFolderName(name) {
-  return name.replace(/[<>:"/\\|?*]/g, "_");
-}
-
-/**
- * Clicks "Load More" button until it's gone.
- */
-async function clickUntilGone(page) {
-  const MAX_ATTEMPTS = 50;
-  let clicked = 0;
-
-  while (clicked < MAX_ATTEMPTS) {
-    const button = await page.$(".btn-hero.btn-positive.btn-block.pager-more");
-    if (!button) break;
-
-    const isVisible = (await button.boundingBox()) !== null;
-    if (!isVisible) break;
-
-    console.log(`Clicking button (attempt ${clicked + 1})`);
-    await Promise.all([button.click(), page.waitForTimeout(2000)]);
-    clicked++;
+async function visitProductPage(page, link) {
+  if (!link || link === "No Offer Link") {
+    console.warn(`⚠️ Invalid product link: ${link}`);
+    return null;
   }
-  console.log(`Total clicks: ${clicked}`);
+
+  try {
+    const response = await page.goto(link, {
+      waitUntil: "networkidle2",
+      timeout: 180000,
+    });
+
+    if (!response || response.status() >= 400) {
+      console.warn(`⚠️ Failed to load product page: ${link}`);
+      return null;
+    }
+
+    return await page.evaluate(() => {
+      return {
+        name:
+          document.querySelector("div.title")?.getAttribute("title")?.trim() ||
+          "No Product Name",
+        description: document
+          .querySelector("a.title-link")
+          ?.getAttribute("aria-label")
+          ?.trim()
+          ?.replace(/\n/g, ""),
+        price:
+          document.querySelector("div.callout")?.textContent.trim() ||
+          "No Price",
+        summary:
+          document
+            .querySelector("div.snippet.summary")
+            ?.getAttribute("title")
+            .trim() || "No Summary",
+        shop:
+          document
+            .querySelector("div.key-attribute")
+            ?.textContent.split("·")[0]
+            .trim() || "shop name",
+        published:
+          Array.from(document.querySelectorAll("ul.material-list .row-text"))
+            .map((row) => row.textContent.trim())[0]
+            ?.split("\n")[1]
+            ?.replace("Published ", "") || "No Published Date",
+        others:
+          Array.from(document.querySelectorAll("ul.material-list .row-text"))
+            .map((row) => row.textContent.trim())
+            ?.filter(
+              (e) =>
+                e !==
+                "This site uses cookies to optimize your experience, analyze traffic, and remember your preferences."
+            ) || "No Popularity",
+        images: document
+          .querySelector("img.native-lazy-img")
+          .getAttribute("src")
+          .trim(),
+      };
+    });
+  } catch (error) {
+    console.error(`❌ Error scraping product page ${link}:`, error);
+    return null;
+  }
 }
 
 /**
@@ -96,19 +136,16 @@ async function visitCategorySubcategory(page, categories) {
   await page.setDefaultTimeout(120000);
 
   for (const category of categories) {
+    console.log(`📂 Processing category: ${category.name}`);
     const categoryData = [];
 
     for (const sub of category.subcategories) {
       try {
         await safeGoto(page, sub.link);
-
-        // const content = await page.content();
-        //  await fs.writeFile(`content.html`, content);
         let pageNumber = 1;
 
         while (true) {
           const url = `${sub?.link}?start=${pageNumber}`;
-
           const success = await safeGoto(page, url);
           if (!success) break;
 
@@ -120,94 +157,52 @@ async function visitCategorySubcategory(page, categories) {
                 "div.title.limit-height.limit-height-large-2.limit-height-small-2"
               );
               const productElement = article.querySelector("a.title-link");
-              const buttonElement = document.querySelector(
+              const buttonElement = article.querySelector(
                 'button[data-bottom-sheet-id="overflow-menu-content-card"]'
               );
 
-              // return {
-              //   shop: shopElement
-              //     ? shopElement.getAttribute("title")
-              //     : "No Title",
-              //   productLink: productElement
-              //     ? productElement.getAttribute("href")
-              //     : "No Product Link",
-              //   offerLink: buttonElement
-              //     ? buttonElement.getAttribute("data-offer-url")
-              //     : "No Offer Link",
-              // };
-
-              return visitProductPage(
-                page,
-                buttonElement?.getAttribute("data-offer-url")
-              );
+              return {
+                shop: shopElement
+                  ? shopElement.getAttribute("title")
+                  : "No Title",
+                productLink: productElement
+                  ? productElement.getAttribute("href")
+                  : "No Product Link",
+                offerLink: buttonElement
+                  ? buttonElement.getAttribute("data-offer-url")
+                  : "No Offer Link",
+              };
             });
           });
 
-          if (articles?.length > 0) {
-            categoryData?.push(articles);
-          }
+          for (const article of articles) {
+            const productData = await visitProductPage(
+              page,
+              article?.offerLink
+            );
 
-          // console.log(`🛒 Found products in ${sub?.link}:`, articles);
+            console.log(`see product data`, productData);
+
+            if (productData) {
+              categoryData.push(productData);
+            }
+          }
 
           pageNumber += 20;
         }
-
-        // await visitProductPages(page, sub);
       } catch (error) {
         console.error(`❌ Failed to visit ${sub.link}:`, error.message);
       }
     }
 
-    // await fs.mkdir(path.join(OUTPUT_DIR, sanitizeFolderName(category.name)), {
-    //   recursive: true,
-    // });
-    // await fs.writeFile(
-    //   path.join(
-    //     OUTPUT_DIR,
-    //     sanitizeFolderName(category.name),
-    //     `${category?.name}.json`
-    //   )
-    // );
-
-    console.log(`${category?.name} data`, categoryData);
+    await fs.mkdir(OUTPUT_DIR, { recursive: true });
+    const categoryFilePath = path.join(OUTPUT_DIR, `${category.name}.json`);
+    await fs.writeFile(categoryFilePath, JSON.stringify(categoryData, null, 2));
   }
 }
 
 /**
- * Visits product pages, extracts product names, and saves HTML.
- */
-async function visitProductPage(page, link) {
-  await safeGoto(page, link);
-
-  const data = await page.evaluate(() => {
-    return {
-      name:
-        document.querySelector("h1.product-title")?.textContent.trim() ||
-        "No Product Name",
-      description: document
-        .querySelector("a.title-link")
-        ?.getAttribute("aria-label")
-        ?.textContent.trim()
-        .replace(/\n/g, ""),
-      price:
-        document.querySelector("div.callout")?.textContent.trim() || "no price",
-      summery:
-        document.querySelector("div.snippet summary")?.textContent.trim() ||
-        "no summary",
-      expires:
-        document.querySelector("div.row-text")?.textContent.trim() ||
-        "no expires",
-      images: Array.from(
-        document.querySelectorAll("div.product-image img")
-      ).map((img) => img.getAttribute("src")),
-    };
-  });
-
-  return data;
-}
-
-/**
- * Navigates safely with retries.
+ * Safe navigation function with retries.
  */
 async function safeGoto(page, url, retries = 3) {
   for (let attempt = 1; attempt <= retries; attempt++) {
@@ -226,7 +221,7 @@ async function safeGoto(page, url, retries = 3) {
         return false;
       }
 
-      return true; // Page exists
+      return true;
     } catch (error) {
       console.error(`❌ Attempt ${attempt} failed for ${url}:`, error);
       if (attempt === retries) {
@@ -255,8 +250,7 @@ async function main() {
   await page.setDefaultTimeout(120000);
 
   const categories = await scrapeCategories(page);
-
-  await fs.writeFile(`category.json`, JSON.stringify(categories));
+  await fs.writeFile(`category.json`, JSON.stringify(categories, null, 2));
 
   if (categories.length === 0) {
     console.error("❌ No categories found. Exiting...");
