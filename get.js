@@ -176,6 +176,7 @@ async function visitCategorySubcategory(page, categories) {
           });
 
           for (const article of articles) {
+            console.log(`see sub category link`, article.offerLink);
             const productData = await visitProductPage(
               page,
               article?.offerLink
