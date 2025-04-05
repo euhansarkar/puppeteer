@@ -140,6 +140,9 @@ async function visitCategorySubcategory(page, categories) {
     const categoryData = [];
 
     for (const sub of category.subcategories) {
+
+      const subCategoryData = []
+
       try {
         await safeGoto(page, sub.link);
         let pageNumber = 1;
@@ -176,7 +179,6 @@ async function visitCategorySubcategory(page, categories) {
           });
 
           for (const article of articles) {
-            console.log(`see sub category link`, article.offerLink);
             const productData = await visitProductPage(
               page,
               article?.offerLink
@@ -184,8 +186,8 @@ async function visitCategorySubcategory(page, categories) {
 
             console.log(`see product data`, productData);
 
-            if (productData) {
-              categoryData.push(productData);
+            if (subCategoryData) {
+              subCategoryData.push(subCategoryData);
             }
           }
 
@@ -194,6 +196,10 @@ async function visitCategorySubcategory(page, categories) {
       } catch (error) {
         console.error(`❌ Failed to visit ${sub.link}:`, error.message);
       }
+    }
+
+    if (subCategoryData.length > 0) {
+      categoryData.push({name: sub.name, data: subCategoryData});
     }
 
     await fs.mkdir(OUTPUT_DIR, { recursive: true });
