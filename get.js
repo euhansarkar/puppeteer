@@ -7,6 +7,9 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+console.log(`see file`, __filename);
+console.log(`see dirname`, __dirname);
+
 // Constants
 const BASE_URL = "https://www.dealnews.com/categories/";
 const OUTPUT_DIR = path.join(__dirname, "categories");
@@ -140,6 +143,8 @@ async function visitCategorySubcategory(page, categories) {
     const categoryData = [];
 
     for (const sub of category.subcategories) {
+      const subData = [];
+      
       try {
         await safeGoto(page, sub.link);
         let pageNumber = 1;
@@ -185,7 +190,7 @@ async function visitCategorySubcategory(page, categories) {
             console.log(`see product data`, productData);
 
             if (productData) {
-              categoryData.push(productData);
+              subData.push(productData);
             }
           }
 
@@ -194,7 +199,12 @@ async function visitCategorySubcategory(page, categories) {
       } catch (error) {
         console.error(`❌ Failed to visit ${sub.link}:`, error.message);
       }
+
+      if (subData?.length > 0) {
+        categoryData?.push({name: sub.link, data: subData})
+      }
     }
+
 
     await fs.mkdir(OUTPUT_DIR, { recursive: true });
     const categoryFilePath = path.join(OUTPUT_DIR, `${category.name}.json`);
