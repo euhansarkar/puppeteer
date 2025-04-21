@@ -15,7 +15,7 @@ async function scrapeArticles() {
   await page.setDefaultTimeout(120000);
 
   const currentYear = new Date().getFullYear();
-  for (let year = 2008; year <= currentYear - 1; year++) {
+  for (let year = 2010; year <= currentYear - 1; year++) {
     console.log(`📅 Scraping year: ${year}`);
 
     const yearDir = path.join(OUTPUT_DIR, `${year}`);
