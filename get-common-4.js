@@ -260,7 +260,7 @@ async function main() {
   await fs.writeFile(`category.json`, JSON.stringify(categories, null, 2));
 
   const newSelectedCategory = await categories?.filter(
-    (category) => category.name === "Store Events"
+    (category) => category.name === "Sports & Fitness"
   );
 
   console.log(`see name data`, newSelectedCategory);

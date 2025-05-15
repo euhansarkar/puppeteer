@@ -123,6 +123,8 @@ async function visitProductPage(page, link) {
           .querySelector("img.native-lazy-img")
           .getAttribute("src")
           .trim(),
+        // link: document.querySelector("")    
+    
       };
     });
   } catch (error) {
@@ -144,7 +146,7 @@ async function visitCategorySubcategory(page, categories) {
 
     for (const sub of category.subcategories) {
       const subData = [];
-      
+
       try {
         await safeGoto(page, sub.link);
         let pageNumber = 1;
@@ -201,10 +203,9 @@ async function visitCategorySubcategory(page, categories) {
       }
 
       if (subData?.length > 0) {
-        categoryData?.push({name: sub.link, data: subData})
+        categoryData?.push({ name: sub.link, data: subData });
       }
     }
-
 
     await fs.mkdir(OUTPUT_DIR, { recursive: true });
     const categoryFilePath = path.join(OUTPUT_DIR, `${category.name}.json`);

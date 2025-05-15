@@ -120,6 +120,7 @@ async function visitProductPage(page, link) {
           .querySelector("img.native-lazy-img")
           ?.getAttribute("src")
           ?.trim(),
+        link: document.querySelector("a.btn-cta").href,
       };
     });
   } catch (error) {
@@ -260,7 +261,7 @@ async function main() {
   await fs.writeFile(`category.json`, JSON.stringify(categories, null, 2));
 
   const newSelectedCategory = await categories?.filter(
-    (category) => category.name === "Movies, Music, Books"
+    (category) => category.name === "Office & School Supplies"
   );
 
   console.log(`see name data`, newSelectedCategory);
